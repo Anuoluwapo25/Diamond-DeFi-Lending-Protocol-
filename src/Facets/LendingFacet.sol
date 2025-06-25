@@ -27,13 +27,10 @@ contract LendingFacet {
         
         LibAppStorage.AppStorage storage s = LibAppStorage.diamondStorage();
         
-        // Update interest before deposit
         _updateInterest(token);
         
-        // Transfer tokens from user
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         
-        // Update user deposits
         s.userDeposits[msg.sender][token] += amount;
         s.totalDeposits[token] += amount;
         
@@ -45,20 +42,15 @@ contract LendingFacet {
         
         LibAppStorage.AppStorage storage s = LibAppStorage.diamondStorage();
         
-        // Update interest before withdrawal
         _updateInterest(token);
         
         require(s.userDeposits[msg.sender][token] >= amount, "Insufficient balance");
-        
-        // Check if withdrawal would break collateral requirements
-        // (This is a simplified check - in production, you'd need more sophisticated logic)
+ 
         require(_checkAccountLiquidity(msg.sender, token, amount), "Insufficient collateral");
         
-        // Update balances
         s.userDeposits[msg.sender][token] -= amount;
         s.totalDeposits[token] -= amount;
         
-        // Transfer tokens to user
         IERC20(token).transfer(msg.sender, amount);
         
         emit Withdraw(msg.sender, token, amount);
@@ -87,7 +79,6 @@ contract LendingFacet {
         uint256 deltaTime = currentTimestamp - s.lastUpdateTimestamp[token];
         
         if (deltaTime > 0) {
-            // Simple interest calculation (in production, use compound interest)
             uint256 borrowRate = s.borrowRates[token];
             uint256 supplyRate = s.supplyRates[token];
             
@@ -99,10 +90,7 @@ contract LendingFacet {
         }
     }
     
-    function _checkAccountLiquidity(address user, address token, uint256 withdrawAmount) internal view returns (bool) {
-        // Simplified liquidity check
-        // In production, this would calculate collateral value vs borrow value
-        LibAppStorage.AppStorage storage s = LibAppStorage.diamondStorage();
+    function _checkAccountLiquidity(address user, address token, uint256 withdrawAmount) internal view returns (bool) {        LibAppStorage.AppStorage storage s = LibAppStorage.diamondStorage();
         uint256 currentDeposit = s.userDeposits[user][token];
         return currentDeposit >= withdrawAmount;
     }

@@ -16,21 +16,17 @@ library LibAppStorage {
     }
 
     struct AppStorage {
-        // User balances
         mapping(address => mapping(address => uint256)) userDeposits;
         mapping(address => mapping(address => uint256)) userBorrows;
         
-        // Market data
         mapping(address => Market) markets;
         mapping(address => uint256) totalDeposits;
         mapping(address => uint256) totalBorrows;
         
-        // Interest rates
         mapping(address => uint256) borrowRates;
         mapping(address => uint256) supplyRates;
         mapping(address => uint256) lastUpdateTimestamp;
         
-        // Price feeds
         mapping(address => address) priceFeeds;
         
         // Protocol parameters
